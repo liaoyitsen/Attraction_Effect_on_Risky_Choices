@@ -66,21 +66,6 @@ study1_complete <- readRDS(here::here("data/study1_complete.Rds"))
 ```
 
 
+# Introduction
 
-# References
-
-```{=tex}
-\begingroup
-\singlespacing
-\setlength{\parindent}{-0.2in}
-\setlength{\leftskip}{0.2in}
-\noindent
-\vspace{-1cm}
-```
-::: {#refs}
-:::
-
-```{=tex}
-\endgroup
-\newpage
-```
+This is the introduction.
