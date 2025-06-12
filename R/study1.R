@@ -18,11 +18,13 @@ study1 <- data.table::fread(here::here("data/raw_data/attraction_effect_study1.c
   tidyr::unite("control_3", c(control_risky_3, control_safe_3), na.rm = T)%>%
   tidyr::unite("control_4", c(control_risky_4, control_safe_4), na.rm = T)%>%
   tidyr::unite("control_5", c(control_risky_5, control_safe_5), na.rm = T)%>%
-  tidyr::pivot_longer(cols = c(treatment_1:control_5), names_to = "trail", values_to = "choice")%>%
+  tidyr::pivot_longer(cols = c(treatment_1:control_5), names_to = "trail", values_to = "raw_choice")%>%
   dplyr::group_by(PROLIFIC_PID)%>%
-  dplyr::mutate(n_decoy = sum(choice == "decoy"))%>%
+  dplyr::mutate(n_decoy = sum(raw_choice == "decoy"))%>%
   dplyr::filter(n_decoy <= 5)%>%
   tidyr::separate_wider_delim(trail, "_", names = c("treatment", "pair"))%>%
+  dplyr::mutate(choice = ifelse((condition == "risk_seeking" & raw_choice == "risky") |
+                                  (condition == "risk_averse" & raw_choice == "safe"), "focal", "non_focal"))%>%
   dplyr::rename("duration" = dplyr::starts_with("Duration"))
 
 
@@ -45,10 +47,12 @@ study1_complete <- data.table::fread(here::here("data/raw_data/attraction_effect
   tidyr::unite("control_3", c(control_risky_3, control_safe_3), na.rm = T)%>%
   tidyr::unite("control_4", c(control_risky_4, control_safe_4), na.rm = T)%>%
   tidyr::unite("control_5", c(control_risky_5, control_safe_5), na.rm = T)%>%
-  tidyr::pivot_longer(cols = c(treatment_1:control_5), names_to = "trail", values_to = "choice")%>%
+  tidyr::pivot_longer(cols = c(treatment_1:control_5), names_to = "trail", values_to = "raw_choice")%>%
   dplyr::group_by(PROLIFIC_PID)%>%
-  dplyr::mutate(n_decoy = sum(choice == "decoy"))%>%
+  dplyr::mutate(n_decoy = sum(raw_choice == "decoy"))%>%
   tidyr::separate_wider_delim(trail, "_", names = c("treatment", "pair"))%>%
+  dplyr::mutate(choice = ifelse((condition == "risk_seeking" & raw_choice == "risky") |
+                                  (condition == "risk_averse" & raw_choice == "safe"), "focal", "non_focal"))%>%
   dplyr::rename("duration" = dplyr::starts_with("Duration"))
 
 
