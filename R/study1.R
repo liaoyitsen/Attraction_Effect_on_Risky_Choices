@@ -55,7 +55,11 @@ study1_complete <- data.table::fread(here::here("data/raw_data/attraction_effect
   tidyr::separate_wider_delim(trail, "_", names = c("treatment", "pair"))%>%
   dplyr::mutate(choice = ifelse((condition == "risk_seeking" & raw_choice == "risky") |
                                   (condition == "risk_averse" & raw_choice == "safe"), 1, 0))%>%
-  dplyr::rename("duration" = dplyr::starts_with("Duration"))
+  dplyr::rename("duration" = dplyr::starts_with("Duration"))%>%
+  dplyr::mutate(decoy = ifelse(raw_choice == "decoy", 1, 0))%>%
+  dplyr::mutate(risky = ifelse(raw_choice == "risky", 1, 0))%>%
+  dplyr::mutate(safe = ifelse(raw_choice == "safe", 1, 0))
+  
 
 
 saveRDS(study1_complete, file = here::here("data/study1_complete.Rds"))

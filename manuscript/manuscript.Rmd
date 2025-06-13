@@ -221,3 +221,65 @@ study1 %>%
   ggplot2::scale_y_continuous("Proportion Choosing Focal Lottery")
 ```
 
+```{r}
+# Rate of decoy being chosen
+
+study1_complete %>%
+  dplyr::mutate(condition = dplyr::recode_factor(condition,
+                                                             'risk_averse' = 'Safe condition',
+                                                             'risk_seeking' = 'Risky condition'),
+                treatment = dplyr::recode_factor(treatment,
+                                                             'control' = 'Control decoy',
+                                                             'treatment' = 'Treatment decoy')) %>%
+  dplyr::group_by(condition, treatment) %>%
+  dplyr::summarize(mean = mean(decoy),
+                   n = dplyr::n(),
+                   sd = sd(decoy),
+                   ci = qnorm(0.975) * sd/sqrt(n)) %>%
+  ggplot2::ggplot(ggplot2::aes(x = condition,
+                               y = mean,
+                               fill = treatment)) +
+  ggplot2::geom_col(position = 'dodge') +
+  ggplot2::geom_text(ggplot2::aes(x = condition,
+                                  y = 0.05,
+                                  label = paste0(round(mean*100, 2), "%", "\n",
+                                                 "n = ", n)),
+                     color = 'white',
+                     lineheight = 0.8,
+                     position = ggplot2::position_dodge(1)) +
+  ggplot2::coord_cartesian(ylim = c(0, 1),
+                           expand = 0) +
+  ggplot2::scale_fill_manual(values = c('#998ec3', '#f1a340')) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = mean - ci,
+                                      ymax = mean + ci),
+                         position = ggplot2::position_dodge(0.9),
+                         width = 0.2) +
+  papaja::theme_apa() +
+  ggplot2::theme(legend.position = c(0.75, 0.9),
+        legend.title = ggplot2::element_blank(),
+        axis.title.x=ggplot2::element_blank(),
+        axis.ticks.x=ggplot2::element_blank())+
+  ggplot2::scale_y_continuous("Proportion Choosing Focal Lottery")
+
+
+
+modelsummary::modelsummary(list(`Risky Lottery` = glm(risky ~ treatment, data = study1_complete[study1_complete$condition == "risk_seeking", ], family = binomial()),
+                                `Safe Lottery` = glm(safe ~ treatment, data = study1_complete[study1_complete$condition == "risk_averse", ], family = binomial())),
+                           estimate = "{estimate}{stars}",
+                           gof_map = "nobs",
+                           vcov = ~PROLIFIC_PID,
+                           coef_map = list("treatmenttreatment" = "Treatment Decoy",
+                                           "conditionrisk_seeking" = "Risk-seeking",
+                                           "treatmenttreatment:conditionrisk_seeking" = "Decoy x Risk-seeking",
+                                           "(Intercept)" = "Constant"),
+                           title = "Likelihood of choosing focal lottery",
+                           output='kableExtra') %>%
+  kableExtra::add_footnote(label = c("\\textit{Note.} Parentheses show standard errors clustered at the participant level. \\newline",
+                                     "$+$p < 0.10, *p < 0.05, **p < 0.01, ***p < 0.001"),
+                           escape = F,
+                           notation = "none",
+                           threeparttable = T) %>%
+  kableExtra::column_spec(1, width = "5cm")
+
+```
+
