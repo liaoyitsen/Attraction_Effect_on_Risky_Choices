@@ -23,8 +23,10 @@ study1 <- data.table::fread(here::here("data/raw_data/attraction_effect_study1.c
   dplyr::mutate(n_decoy = sum(raw_choice == "decoy"))%>%
   dplyr::filter(n_decoy <= 5)%>%
   tidyr::separate_wider_delim(trail, "_", names = c("treatment", "pair"))%>%
-  dplyr::mutate(choice = ifelse((condition == "risk_seeking" & raw_choice == "risky") |
-                                  (condition == "risk_averse" & raw_choice == "safe"), "focal", "non_focal"))%>%
+  dplyr::mutate(choice = dplyr::case_when(
+                    condition == "risk_seeking" & raw_choice == "risky" ~ 1,
+                    condition == "risk_averse"  & raw_choice == "safe" ~ 1,
+                    TRUE ~ 0))%>%
   dplyr::rename("duration" = dplyr::starts_with("Duration"))
 
 
@@ -52,11 +54,35 @@ study1_complete <- data.table::fread(here::here("data/raw_data/attraction_effect
   dplyr::mutate(n_decoy = sum(raw_choice == "decoy"))%>%
   tidyr::separate_wider_delim(trail, "_", names = c("treatment", "pair"))%>%
   dplyr::mutate(choice = ifelse((condition == "risk_seeking" & raw_choice == "risky") |
-                                  (condition == "risk_averse" & raw_choice == "safe"), "focal", "non_focal"))%>%
+                                  (condition == "risk_averse" & raw_choice == "safe"), 1, 0))%>%
   dplyr::rename("duration" = dplyr::starts_with("Duration"))
 
 
 saveRDS(study1_complete, file = here::here("data/study1_complete.Rds"))
 haven::write_dta(study1_complete,
                  path = here::here("data/study1_complete.dta"))
+
+
+study1_change <- study1%>%
+  tidyr::pivot_wider(id_cols = c(PROLIFIC_PID, pair, condition),
+                     names_from = treatment,
+                     values_from = raw_choice)%>%
+  dplyr::mutate(
+    change_from_decoy = dplyr::case_when(
+      condition == "risk_seeking" & treatment == "risky" & control == "decoy" ~ 1,
+      condition == "risk_averse"  & treatment == "safe" & control == "decoy" ~ 1,
+      TRUE ~ 0),
+    change_from_oppo = dplyr::case_when(
+      condition == "risk_seeking" & treatment == "risky" & control == "safe" ~ 1,
+      condition == "risk_averse"  & treatment == "safe" & control == "risky" ~ 1,
+      TRUE ~ 0),
+    change_from_any = dplyr::case_when(
+      condition == "risk_seeking" & treatment == "risky" & control != "risky" ~ 1,
+      condition == "risk_averse"  & treatment == "safe" & control != "safe" ~ 1,
+      TRUE ~ 0)
+  )
+
+saveRDS(study1_change, file = here::here("data/study1_change.Rds"))
+haven::write_dta(study1_change,
+                 path = here::here("data/study1_change.dta"))
 
