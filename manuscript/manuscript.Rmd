@@ -131,6 +131,8 @@ modelsummary::modelsummary(list(`Risky Lottery` = glm(choice ~ treatment, data =
                            threeparttable = T) %>%
   kableExtra::column_spec(1, width = "5cm")
 
+
+
 ```
 
 
