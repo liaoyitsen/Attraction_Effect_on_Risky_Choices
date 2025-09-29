@@ -1,0 +1,77 @@
+\setbeamertemplate{itemize items}[default]
+\setbeamertemplate{enumerate items}[default]
+\setbeamertemplate{navigation symbols}{}
+\setbeamercolor{section in head/foot}{fg=white}
+\setbeamercolor{itemize item}{fg=black}
+\setbeamercolor{structure}{fg=black}
+
+\usepackage{tabularx, graphicx, longtable, multicol, booktabs,
+  listings, graphicx, amsmath, amsfonts, amssymb, tikz, pdfpages,
+  multirow, collcell, epigraph, adjustbox, siunitx, colortbl}
+\usepackage{mathrsfs}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{appendixnumberbeamer}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning}
+\tikzstyle{circle_style} = [circle, draw, thick, minimum size=3cm, text centered, font=\large]
+\tikzstyle{arrow_style} = [ultra thick, ->, >=latex, rounded corners=12pt]
+
+\setbeamertemplate{footline}
+{\begin{beamercolorbox}[sep=1ex]{author in head/foot}
+  \hfill\llap{\insertframenumber}%
+  \end{beamercolorbox}%
+}
+
+\AtBeginPart{}
+\AtBeginSubsection{}
+\AtBeginSubsubsection{}
+\setlength{\emergencystretch}{0em}
+\setlength{\parskip}{0pt}
+
+\AtBeginSection{}
+
+
+% Shaded Quote
+
+\usepackage{etoolbox, framed, libertine}
+\newcommand*\quotefont{\fontfamily{LinuxLibertineT-LF}}
+
+\newcommand*\quotesize{60} % if quote size changes, need a way to make shifts relative
+% Make commands for the quotes
+\newcommand*{\openquote}
+   {\tikz[remember picture,overlay,xshift=-4ex,yshift=-2.5ex]
+   \node (OQ) {\quotefont\fontsize{\quotesize}{\quotesize}\selectfont``};\kern0pt}
+
+\newcommand*{\closequote}[1]
+  {\tikz[remember picture,overlay,xshift=4ex,yshift={#1}]
+   \node (CQ) {\quotefont\fontsize{\quotesize}{\quotesize}\selectfont''};}
+
+% select a colour for the shading
+\colorlet{shadecolor}{white}
+
+\newcommand*\shadedauthorformat{\emph} % define format for the author argument
+
+% Now a command to allow left, right and centre alignment of the author
+\newcommand*\authoralign[1]{%
+  \if#1l
+    \def\authorfill{}\def\quotefill{\hfill}
+  \else
+    \if#1r
+      \def\authorfill{\hfill}\def\quotefill{}
+    \else
+      \if#1c
+        \gdef\authorfill{\hfill}\def\quotefill{\hfill}
+      \else\typeout{Invalid option}
+      \fi
+    \fi
+  \fi}
+% wrap everything in its own environment which takes one argument (author) and one optional argument
+% specifying the alignment [l, r or c]
+%
+\newenvironment{shadequote}[2][l]%
+{\authoralign{#1}
+\ifblank{#2}
+   {\def\shadequoteauthor{}\def\yshift{-2ex}\def\quotefill{\hfill}}
+   {\def\shadequoteauthor{\par\authorfill\shadedauthorformat{#2}}\def\yshift{2ex}}
+\begin{snugshade}\begin{quote}\openquote}
+{\shadequoteauthor\quotefill\closequote{\yshift}\end{quote}\end{snugshade}}
