@@ -30,6 +30,8 @@ knitr::opts_chunk$set(echo = F, message = F, warning = F,
   
 study1 <- readRDS(here::here("data/study1.Rds"))
 study1_complete <- readRDS(here::here("data/study1_complete.Rds"))
+study1_change <- readRDS(here::here("data/study1_change.Rds"))
+
 
 ```
 
@@ -303,6 +305,73 @@ introduction of a third option (Trueblood et al, 2014)
 \end{itemize}
 
 # Results
+
+### Study 1: Balance Test (Control trails)
+```{r}
+
+study1_change1 <- study1_change %>%
+  dplyr::mutate(
+    condition = dplyr::recode_factor(
+      condition,
+      'risk_averse' = 'Safe',
+      'risk_seeking' = 'Risky'),
+    condition = factor(condition, levels = c("Safe", "Risky")),
+    control = dplyr::recode_factor(
+      control,
+      'safe' = 'Safe',
+      'risky' = 'Risky',
+      'decoy' = 'Decoy'),
+    control = factor(control, levels = c("Decoy", "Risky", "Safe")))
+
+# Create table of counts
+tab <- as.data.frame(table(
+  Control    = study1_change1$control,
+  Condition = study1_change1$condition
+))
+
+# Pivot wider
+tab_wide <- tidyr::pivot_wider(
+  tab,
+  names_from = Control,
+  values_from = Freq
+)
+
+# ---- Convert to percentages ----
+tab_wide <- tab_wide %>%
+  dplyr::rowwise() %>%
+  dplyr::mutate(
+    total = sum(dplyr::c_across(where(is.numeric))),
+    dplyr::across(where(is.numeric), ~ paste0(round(.x / total * 100, 1), "\\%"))
+  ) %>%
+  dplyr::ungroup() %>%
+  dplyr::select(-total)# drop total if you don’t want it shown
+
+tab_wide <- tab_wide %>%
+  dplyr::mutate(
+    Risky = ifelse(
+      Risky %in% c(""), 
+      kableExtra::cell_spec(Risky, "latex", background = "yellow"), 
+      as.character(Risky)),
+    Decoy = ifelse(
+      Decoy %in% c(""), 
+      kableExtra::cell_spec(Decoy, "latex", background = "yellow"), 
+      as.character(Decoy)
+    ))
+
+library(kableExtra)
+knitr::kable(
+  tab_wide,
+  format = "latex",
+  escape = FALSE,   # ⬅ important so LaTeX code is kept
+  booktabs = TRUE,
+  col.names = c("Condition", "Decoy", "Risky", "Safe")
+) %>%
+  kable_styling(position = "center")
+```
+
+\vfill
+\hfill \tiny *Full sample without excluding any participant
+
 ### Study 1: Proportion of Choosing Focal Lotteries
 ```{r}
 study1 %>%
@@ -667,3 +736,207 @@ knitr::kable(
   \item Make it more of an experiment paper or a theory paper?
   \item Test it in a more externally valid setting?
 \end{itemize}
+
+# Appendix
+
+### Appendix: Switch to Focal, Conditioned on Not Choosing Focal in Control
+```{r}
+study1_change %>%
+    dplyr::filter((control != "safe" & condition == "risk_averse")|
+                  (control != "risky" & condition == "risk_seeking"))%>%
+  dplyr::group_by(condition) %>%
+  dplyr::summarize(mean = mean(change_from_any),
+                   n = dplyr::n(),
+                   sd = sd(change_from_any),
+                   ci = qnorm(0.975) * sd/sqrt(n)) %>%
+  ggplot2::ggplot(ggplot2::aes(x = condition,
+                               y = mean,
+                               fill = condition)) +
+  ggplot2::geom_col(position = 'dodge') +
+  ggplot2::geom_text(ggplot2::aes(x = condition,
+                                  y = 0.05,
+                                  label = paste0(round(mean*100, 2), "%", "\n",
+                                                 "n = ", n)),
+                     color = 'white',
+                     lineheight = 0.75,
+                     size = 2.5,
+                     position = ggplot2::position_dodge(0.9)) +
+  ggplot2::coord_cartesian(ylim = c(0, 1),
+                           expand = 0) +
+  ggplot2::scale_fill_manual(values = c('#998ec3', '#f1a340')) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = mean - ci,
+                                      ymax = mean + ci),
+                         position = ggplot2::position_dodge(0.9),
+                         width = 0.2) +
+  papaja::theme_apa() +
+  ggplot2::theme(legend.position = c(1, 1.1),
+                 legend.justification = c(1, 1),
+                 legend.direction = "horizontal",
+                 legend.background = ggplot2::element_rect(fill = "transparent", color = NA),
+                 legend.text = ggplot2::element_text(size = 6),
+                 legend.title = ggplot2::element_blank(),
+                 axis.title.x = ggplot2::element_blank(),
+                 axis.title.y = ggplot2::element_blank(),
+                 axis.ticks.x = ggplot2::element_blank(),
+                 strip.placement = "outside")+
+  ggplot2::scale_y_continuous("Proportion Choosing Focal Lottery")
+
+```
+
+### Appendix: Move away from Focal, Conditioned on Already Choosing Focal in Control
+```{r}
+study1_change %>%
+    dplyr::filter((control == "safe" & condition == "risk_averse")|
+                  (control == "risky" & condition == "risk_seeking"))%>%
+  dplyr::group_by(condition) %>%
+  dplyr::summarize(mean = mean(move_away_oppo),
+                   n = dplyr::n(),
+                   sd = sd(move_away_oppo),
+                   ci = qnorm(0.975) * sd/sqrt(n)) %>%
+  ggplot2::ggplot(ggplot2::aes(x = condition,
+                               y = mean,
+                               fill = condition)) +
+  ggplot2::geom_col(position = 'dodge') +
+  ggplot2::geom_text(ggplot2::aes(x = condition,
+                                  y = 0.05,
+                                  label = paste0(round(mean*100, 2), "%", "\n",
+                                                 "n = ", n)),
+                     color = 'white',
+                     lineheight = 0.75,
+                     size = 2.5,
+                     position = ggplot2::position_dodge(0.9)) +
+  ggplot2::coord_cartesian(ylim = c(0, 1),
+                           expand = 0) +
+  ggplot2::scale_fill_manual(values = c('#998ec3', '#f1a340')) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = mean - ci,
+                                      ymax = mean + ci),
+                         position = ggplot2::position_dodge(0.9),
+                         width = 0.2) +
+  papaja::theme_apa() +
+  ggplot2::theme(legend.position = c(1, 1.1),
+                 legend.justification = c(1, 1),
+                 legend.direction = "horizontal",
+                 legend.background = ggplot2::element_rect(fill = "transparent", color = NA),
+                 legend.text = ggplot2::element_text(size = 6),
+                 legend.title = ggplot2::element_blank(),
+                 axis.title.x = ggplot2::element_blank(),
+                 axis.title.y = ggplot2::element_blank(),
+                 axis.ticks.x = ggplot2::element_blank(),
+                 strip.placement = "outside")+
+  ggplot2::scale_y_continuous("Proportion Choosing Focal Lottery")
+
+```
+
+### Appendix: Heat Map -- Safe Condition
+
+```{r}
+study1_change_safe <- study1_change %>%
+  dplyr::filter(condition == "risk_averse")%>%
+  dplyr::mutate(
+    control = dplyr::recode_factor(
+      control,
+      'safe' = 'Safe',
+      'risky' = 'Risky',
+      'decoy' = 'Decoy'),
+    control = factor(control, levels = c("Decoy", "Risky", "Safe")),
+    treatment = dplyr::recode_factor(
+      treatment,
+      'safe' = 'Safe',
+      'risky' = 'Risky',
+      'decoy' = 'Decoy'),
+    treatment = factor(treatment, levels = c("Decoy", "Risky", "Safe")))
+
+# Create table of counts
+tab_safe <- as.data.frame(table(
+  Control = study1_change_safe$control,
+  Treatment = study1_change_safe$treatment))
+
+# Pivot wider
+tab_wide_safe <- tidyr::pivot_wider(
+  tab_safe,
+  names_from = Treatment,
+  values_from = Freq)
+
+# ---- Convert to percentages ----
+tab_wide_safe <- tab_wide_safe %>%
+  dplyr::rowwise() %>%
+  dplyr::mutate(
+    total = sum(dplyr::c_across(where(is.numeric))),
+    dplyr::across(where(is.numeric), ~ paste0(round(.x / total * 100, 1), "\\%"))
+  ) %>%
+  dplyr::ungroup() %>%
+  dplyr::select(-total)# drop total if you don’t want it shown
+
+
+
+library(kableExtra)
+knitr::kable(
+  tab_wide_safe,
+  format = "latex",
+  escape = FALSE,   # ⬅ important so LaTeX code is kept
+  booktabs = TRUE,
+  col.names = c("Control", "Decoy", "Risky", "Safe"),
+  caption = "Safe condition"
+) %>%
+  kable_styling(position = "center")
+
+
+
+```
+
+### Appendix: Heat Map -- Risky Condition
+
+```{r}
+study1_change_risky <- study1_change %>%
+  dplyr::filter(condition == "risk_seeking")%>%
+  dplyr::mutate(
+    control = dplyr::recode_factor(
+      control,
+      'safe' = 'Safe',
+      'risky' = 'Risky',
+      'decoy' = 'Decoy'),
+    control = factor(control, levels = c("Decoy", "Risky", "Safe")),
+    treatment = dplyr::recode_factor(
+      treatment,
+      'safe' = 'Safe',
+      'risky' = 'Risky',
+      'decoy' = 'Decoy'),
+    treatment = factor(treatment, levels = c("Decoy", "Risky", "Safe")))
+
+
+# Create table of counts
+tab_risky <- as.data.frame(table(
+    Treatment = study1_change_risky$treatment,
+  Control = study1_change_risky$control
+))
+
+# Pivot wider
+tab_wide_risky <- tidyr::pivot_wider(
+  tab_risky,
+  names_from = Treatment,
+  values_from = Freq)
+
+# ---- Convert to percentages ----
+tab_wide_risky <- tab_wide_risky %>%
+  dplyr::rowwise() %>%
+  dplyr::mutate(
+    total = sum(dplyr::c_across(where(is.numeric))),
+    dplyr::across(where(is.numeric), ~ paste0(round(.x / total * 100, 1), "\\%"))
+  ) %>%
+  dplyr::ungroup() %>%
+  dplyr::select(-total)# drop total if you don’t want it shown
+
+
+library(kableExtra)
+knitr::kable(
+  tab_wide_risky,
+  format = "latex",
+  escape = FALSE,   # ⬅ important so LaTeX code is kept
+  booktabs = TRUE,
+  col.names = c("Control", "Decoy", "Risky", "Safe"),
+  caption = "Risky condition"
+) %>%
+  kable_styling(position = "center")
+
+```
+

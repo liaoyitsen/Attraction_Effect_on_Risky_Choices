@@ -1,0 +1,475 @@
+---
+title: "2025_SJDM_Poster"
+output: pdf_document
+date: "2025-10-15"
+---
+
+```{r setup, include = FALSE}
+library(magrittr)
+library(ggplot2)
+library(ggpubr)
+library(dplyr)
+library(modelsummary)
+library(estimatr)
+library(lme4)
+library(patchwork)
+
+knitr::opts_chunk$set(fig.width = 8, fig.height = 7)
+knitr::opts_chunk$set(warning = FALSE)
+
+study1 <- readRDS(here::here("data/study1.Rds"))
+study1_complete <- readRDS(here::here("data/study1_complete.Rds"))
+study1_change <- readRDS(here::here("data/study1_change.Rds"))
+pilot1 <- readRDS(here::here("data/study1_change.Rds"))
+
+
+```
+
+
+
+
+
+
+
+## Cluster SE - Negative Preference Reversal (Treatment)
+```{r}
+library(dplyr)
+library(ggplot2)
+library(clubSandwich)
+library(broom)
+
+# Compute participant-level means
+clustered_estimates <- study1_complete %>%
+  filter(treatment == "treatment") %>%
+  mutate(
+    choose_risky = ifelse(raw_choice == "risky", 1, 0),
+    choose_safe  = ifelse(raw_choice == "safe", 1, 0),
+    choose_decoy  = ifelse(raw_choice == "decoy", 1, 0)
+  ) %>%
+  group_by(condition, PROLIFIC_PID) %>%
+  summarise(
+    risky_rate = mean(choose_risky),
+    safe_rate = mean(choose_safe),
+    decoy_rate = mean(choose_decoy),
+    .groups = "drop"
+  )
+
+# Ensure condition is a factor with reference = "risk_averse"
+clustered_estimates <- clustered_estimates %>%
+  mutate(condition = factor(condition, levels = c("risk_averse", "risk_seeking")))
+
+# Fit linear models
+mod_risky <- lm(risky_rate ~ condition, data = clustered_estimates)
+mod_safe  <- lm(safe_rate  ~ condition, data = clustered_estimates)
+mod_decoy  <- lm(decoy_rate  ~ condition, data = clustered_estimates)
+
+# Clustered SEs
+risky_cl <- coef_test(mod_risky, vcov = "CR2", cluster = clustered_estimates$PROLIFIC_PID)
+safe_cl  <- coef_test(mod_safe,  vcov = "CR2", cluster = clustered_estimates$PROLIFIC_PID)
+decoy_cl  <- coef_test(mod_decoy,  vcov = "CR2", cluster = clustered_estimates$PROLIFIC_PID)
+
+# Inspect result tables
+print(risky_cl)
+print(safe_cl)
+print(decoy_cl)
+
+# Helper function to safely extract coefficient and SE
+get_coef_info <- function(tbl) {
+  tbl %>%
+    dplyr::filter(Coef != "(Intercept)") %>%
+    dplyr::summarise(
+      diff = beta,
+      se   = SE
+    ) %>%
+    as.list()
+}
+
+# Extract risky and safe info
+risky_info <- get_coef_info(risky_cl)
+safe_info  <- get_coef_info(safe_cl)
+decoy_info  <- get_coef_info(decoy_cl)
+
+# Combine into preference reversal table
+pref_rev <- tibble(
+  lottery = c("Risky lottery", "Safe lottery","Decoy"),
+  diff = c(risky_info$diff, -safe_info$diff, decoy_info$diff),  # flip sign for safe
+  se = c(risky_info$se, safe_info$se, decoy_info$se)
+) %>%
+  mutate(
+    ci_low = diff - 1.96 * se,
+    ci_high = diff + 1.96 * se
+  )
+
+ggplot(pref_rev, aes(x = lottery, y = diff)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+  geom_errorbar(aes(ymin = ci_low, ymax = ci_high),
+                width = 0.15, linewidth = 0.6, color = "gray30") +
+  geom_point(size = 4, color = "black") +
+  geom_line(aes(group = 1), color = "gray50", linewidth = 0.8) +
+  coord_cartesian(ylim = c(-0.15, 0.15), expand = 0) +
+  labs(
+    x = "",
+    y = "Propotion of choosing when it is focal - when it is nonfocal",
+    title = "Decoy Targeting Risky Lottery v.s. Decoy Targeting Risky Lottery ",
+    subtitle = "95% CI clustered by participant"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(face = "bold")
+  )
+```
+## Cluster SE - No Preference Reversal (Control)
+```{r}
+library(dplyr)
+library(ggplot2)
+library(clubSandwich)
+library(broom)
+
+# Compute participant-level means
+clustered_estimates1 <- study1_complete %>%
+  filter(treatment == "control") %>%
+  mutate(
+    choose_risky = ifelse(raw_choice == "risky", 1, 0),
+    choose_safe  = ifelse(raw_choice == "safe", 1, 0),
+    choose_decoy  = ifelse(raw_choice == "decoy", 1, 0)
+  ) %>%
+  group_by(condition, PROLIFIC_PID) %>%
+  summarise(
+    risky_rate = mean(choose_risky),
+    safe_rate = mean(choose_safe),
+    decoy_rate = mean(choose_decoy),
+    .groups = "drop"
+  )
+
+# Ensure condition is a factor with reference = "risk_averse"
+clustered_estimates1 <- clustered_estimates1 %>%
+  mutate(condition = factor(condition, levels = c("risk_averse", "risk_seeking")))
+
+# Fit linear models
+mod_risky1 <- lm(risky_rate ~ condition, data = clustered_estimates1)
+mod_safe1  <- lm(safe_rate  ~ condition, data = clustered_estimates1)
+mod_decoy1  <- lm(decoy_rate  ~ condition, data = clustered_estimates1)
+
+# Clustered SEs
+risky_cl1 <- coef_test(mod_risky1, vcov = "CR2", cluster = clustered_estimates1$PROLIFIC_PID)
+safe_cl1  <- coef_test(mod_safe1,  vcov = "CR2", cluster = clustered_estimates1$PROLIFIC_PID)
+decoy_cl1  <- coef_test(mod_decoy1,  vcov = "CR2", cluster = clustered_estimate1s$PROLIFIC_PID)
+
+# Inspect result tables
+print(risky_cl1)
+print(safe_cl1)
+print(decoy_cl1)
+
+# Helper function to safely extract coefficient and SE
+get_coef_info <- function(tbl) {
+  tbl %>%
+    dplyr::filter(Coef != "(Intercept)") %>%
+    dplyr::summarise(
+      diff = beta,
+      se   = SE
+    ) %>%
+    as.list()
+}
+
+# Extract risky and safe info
+risky_info1 <- get_coef_info(risky_cl1)
+safe_info1  <- get_coef_info(safe_cl1)
+decoy_info1  <- get_coef_info(decoy_cl1)
+
+# Combine into preference reversal table
+pref_rev1 <- tibble(
+  lottery = c("Risky lottery", "Safe lottery","Decoy"),
+  diff = c(risky_info1$diff, safe_info1$diff, decoy_info1$diff),  # flip sign for safe
+  se = c(risky_info1$se, safe_info1$se, decoy_info1$se)
+) %>%
+  mutate(
+    ci_low = diff - 1.96 * se,
+    ci_high = diff + 1.96 * se
+  )
+
+ggplot(pref_rev1, aes(x = lottery, y = diff)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+  geom_errorbar(aes(ymin = ci_low, ymax = ci_high),
+                width = 0.15, linewidth = 0.6, color = "gray30") +
+  geom_point(size = 4, color = "black") +
+  geom_line(aes(group = 1), color = "gray50", linewidth = 0.8) +
+  coord_cartesian(ylim = c(-0.15, 0.15), expand = 0) +
+  labs(
+    x = "",
+    y = "Propotion of choosing when risky lottery is focal - when it is nonfocal",
+    title = "Control Decoy ot Targeting Any Lottery",
+    subtitle = "95% CI clustered by participant"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(face = "bold")
+  )
+```
+# Hetreo Effect (Pair)
+```{r}
+library(dplyr)
+library(ggplot2)
+library(clubSandwich)
+library(broom)
+
+# Step 1. Compute participant-level means per pair
+clustered_estimates_pairs <- study1_complete %>%
+  filter(treatment == "treatment") %>%
+  mutate(
+    choose_risky = ifelse(raw_choice == "risky", 1, 0),
+    choose_safe  = ifelse(raw_choice == "safe", 1, 0)
+  ) %>%
+  group_by(condition, PROLIFIC_PID, pair) %>%  # pair_id = unique trial set
+  summarise(
+    risky_rate = mean(choose_risky),
+    safe_rate  = mean(choose_safe),
+    .groups = "drop"
+  ) %>%
+  mutate(condition = factor(condition, levels = c("risk_averse", "risk_seeking")))
+
+# Step 2. Define helper to fit models with clustered SEs per pair
+get_clustered_diff <- function(df, outcome) {
+  mod <- lm(reformulate("condition", outcome), data = df)
+  cl  <- coef_test(mod, vcov = "CR2", cluster = df$PROLIFIC_PID)
+  cl_df <- as.data.frame(cl)
+  est <- cl_df |> dplyr::filter(Coef == "conditionrisk_seeking")
+  tibble(
+    diff = est$beta,
+    se = est$SE
+  )
+}
+
+# Step 3. Loop through each pair to extract both risky & safe diffs
+pair_results <- clustered_estimates_pairs %>%
+  group_by(pair) %>%
+  summarise(
+    risky_diff = get_clustered_diff(cur_data(), "risky_rate")$diff,
+    risky_se   = get_clustered_diff(cur_data(), "risky_rate")$se,
+    safe_diff  = get_clustered_diff(cur_data(), "safe_rate")$diff,
+    safe_se    = get_clustered_diff(cur_data(), "safe_rate")$se,
+    .groups = "drop"
+  )
+
+# Step 4. Reshape and flip safe sign for consistency
+pref_rev_pairs <- pair_results %>%
+  mutate(safe_diff = -safe_diff) %>%
+  tidyr::pivot_longer(
+    cols = c(risky_diff, safe_diff, risky_se, safe_se),
+    names_to = c("lottery", ".value"),
+    names_pattern = "(risky|safe)_(diff|se)"
+  ) %>%
+  mutate(
+    lottery = factor(lottery, levels = c("risky", "safe"),
+                     labels = c("Risky lottery", "Safe lottery")),
+    ci_low = diff - 1.96 * se,
+    ci_high = diff + 1.96 * se
+  )
+
+# Step 5. Plot: side-by-side effects by pair
+ggplot(pref_rev_pairs, aes(x = factor(pair), y = diff, color = lottery, group = lottery)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+  geom_errorbar(aes(ymin = ci_low, ymax = ci_high),
+                position = position_dodge(width = 0.4), width = 0.15) +
+  geom_point(position = position_dodge(width = 0.4), size = 3) +
+  geom_line(position = position_dodge(width = 0.4)) +
+  coord_cartesian(ylim = c(-0.2, 0.2), expand = 0) +
+  scale_color_manual(values = c("#3E8EDE", "#E69F00")) +
+  labs(
+    x = "Lottery pair",
+    y = "Propotion of choosing when it is focal - when it is nonfocal",
+    title = "Decoy Targeting Risky Lottery v.s. Decoy Targeting Risky Lottery ",
+    color = "Lottery type",
+    subtitle = "95% CI clustered by participant"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    legend.position = "top",
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(face = "bold"),
+    axis.text.x = element_text(size = 11)
+  )
+```
+
+
+
+# Attraction Effect: Treatment vs. Control
+```{r}
+library(dplyr)
+library(ggplot2)
+library(clubSandwich)
+library(broom)
+
+# Risk_Averse Condition
+
+# Compute participant-level means
+clustered_estimates <- study1_complete %>%
+  filter(condition == "risk_averse") %>%
+  mutate(
+    choose_risky = ifelse(raw_choice == "risky", 1, 0),
+    choose_safe  = ifelse(raw_choice == "safe", 1, 0),
+    choose_decoy = ifelse(raw_choice == "decoy", 1, 0)
+  ) %>%
+  group_by(treatment, PROLIFIC_PID) %>%
+  summarise(
+    risky_rate = mean(choose_risky),
+    safe_rate = mean(choose_safe),
+    decoy_rate = mean(choose_decoy),
+    .groups = "drop"
+  )
+
+# Ensure condition is a factor with reference = "risk_averse"
+clustered_estimates <- clustered_estimates %>%
+  mutate(treatment = factor(treatment, levels = c("control", "treatment")))
+
+# Fit linear models
+mod_risky <- lm(risky_rate ~ treatment, data = clustered_estimates)
+mod_safe  <- lm(safe_rate  ~ treatment, data = clustered_estimates)
+mod_decoy  <- lm(decoy_rate  ~ treatment, data = clustered_estimates)
+
+
+# Clustered SEs
+risky_cl <- coef_test(mod_risky, vcov = "CR2", cluster = clustered_estimates$PROLIFIC_PID)
+safe_cl  <- coef_test(mod_safe,  vcov = "CR2", cluster = clustered_estimates$PROLIFIC_PID)
+decoy_cl  <- coef_test(mod_decoy,  vcov = "CR2", cluster = clustered_estimates$PROLIFIC_PID)
+
+# Inspect result tables
+print(risky_cl)
+print(safe_cl)
+print(decoy_cl)
+
+# Helper function to safely extract coefficient and SE
+get_coef_info <- function(tbl) {
+  tbl %>%
+    dplyr::filter(Coef != "(Intercept)") %>%
+    dplyr::summarise(
+      diff = beta,
+      se   = SE
+    ) %>%
+    as.list()
+}
+
+# Extract risky and safe info
+risky_info <- get_coef_info(risky_cl)
+safe_info  <- get_coef_info(safe_cl)
+decoy_info  <- get_coef_info(decoy_cl)
+
+# Combine into preference reversal table
+pref_rev <- tibble(
+  lottery = c("Risky lottery", "Safe lottery", "Decoy"),
+  diff = c(risky_info$diff, safe_info$diff, decoy_info$diff),  # flip sign for safe
+  se = c(risky_info$se, safe_info$se, decoy_info$se)
+) %>%
+  mutate(
+    ci_low = diff - 1.96 * se,
+    ci_high = diff + 1.96 * se
+  )
+
+p_risk_averse<-ggplot(pref_rev, aes(x = lottery, y = diff)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+  geom_errorbar(aes(ymin = ci_low, ymax = ci_high),
+                width = 0.15, linewidth = 0.6, color = "gray30") +
+  geom_point(size = 4, color = "black") +
+  geom_line(aes(group = 1), color = "gray50", linewidth = 0.8) +
+  coord_cartesian(ylim = c(-0.15, 0.15), expand = 0) +
+  labs(
+    x = "",
+    y = "Propotion of Choosing with Treatment Decoy - with Control Decoy",
+    title = "Treatment decoy targeting Safe lottery v.s. Control decoy",
+    subtitle = "95% CI clustered by participant"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(face = "bold")
+  )
+
+# Risk_Seeking Condition
+
+# Compute participant-level means
+clustered_estimates1 <- study1_complete %>%
+  filter(condition == "risk_seeking") %>%
+  mutate(
+    choose_risky = ifelse(raw_choice == "risky", 1, 0),
+    choose_safe  = ifelse(raw_choice == "safe", 1, 0),
+    choose_decoy = ifelse(raw_choice == "decoy", 1, 0)
+  ) %>%
+  group_by(treatment, PROLIFIC_PID) %>%
+  summarise(
+    risky_rate = mean(choose_risky),
+    safe_rate = mean(choose_safe),
+    decoy_rate = mean(choose_decoy),
+    .groups = "drop"
+  )
+
+# Ensure condition is a factor with reference = "risk_averse"
+clustered_estimates1 <- clustered_estimates1 %>%
+  mutate(treatment = factor(treatment, levels = c("control", "treatment")))
+
+# Fit linear models
+mod_risky1 <- lm(risky_rate ~ treatment, data = clustered_estimates1)
+mod_safe1  <- lm(safe_rate  ~ treatment, data = clustered_estimates1)
+mod_decoy1  <- lm(decoy_rate  ~ treatment, data = clustered_estimates1)
+
+
+# Clustered SEs
+risky_cl1 <- coef_test(mod_risky1, vcov = "CR2", cluster = clustered_estimates1$PROLIFIC_PID)
+safe_cl1  <- coef_test(mod_safe1,  vcov = "CR2", cluster = clustered_estimates1$PROLIFIC_PID)
+decoy_cl1  <- coef_test(mod_decoy1,  vcov = "CR2", cluster = clustered_estimates1$PROLIFIC_PID)
+
+# Inspect result tables
+print(risky_cl1)
+print(safe_cl1)
+print(decoy_cl1)
+
+# Helper function to safely extract coefficient and SE
+get_coef_info <- function(tbl) {
+  tbl %>%
+    dplyr::filter(Coef != "(Intercept)") %>%
+    dplyr::summarise(
+      diff = beta,
+      se   = SE
+    ) %>%
+    as.list()
+}
+
+# Extract risky and safe info
+risky_info1 <- get_coef_info(risky_cl1)
+safe_info1  <- get_coef_info(safe_cl1)
+decoy_info1  <- get_coef_info(decoy_cl1)
+
+# Combine into preference reversal table
+pref_rev1 <- tibble(
+  lottery = c("Risky lottery", "Safe lottery", "Decoy"),
+  diff = c(risky_info1$diff, safe_info1$diff, decoy_info1$diff),  # flip sign for safe
+  se = c(risky_info1$se, safe_info1$se, decoy_info1$se)
+) %>%
+  mutate(
+    ci_low = diff - 1.96 * se,
+    ci_high = diff + 1.96 * se
+  )
+
+p_risk_seeking<-ggplot(pref_rev1, aes(x = lottery, y = diff)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+  geom_errorbar(aes(ymin = ci_low, ymax = ci_high),
+                width = 0.15, linewidth = 0.6, color = "gray30") +
+  geom_point(size = 4, color = "black") +
+  geom_line(aes(group = 1), color = "gray50", linewidth = 0.8) +
+  coord_cartesian(ylim = c(-0.15, 0.15), expand = 0) +
+  labs(
+    x = "",
+    y = "Propotion of Choosing with Treatment Decoy - with Control Decoy",
+    title = "Treatment decoy targeting Risky lottery v.s. Control decoy",
+    subtitle = "95% CI clustered by participant"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(face = "bold")
+  )
+
+p_risk_averse+p_risk_seeking
+```
+
+`

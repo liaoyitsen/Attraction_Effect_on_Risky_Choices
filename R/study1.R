@@ -83,6 +83,18 @@ study1_change <- study1%>%
     change_from_any = dplyr::case_when(
       condition == "risk_seeking" & treatment == "risky" & control != "risky" ~ 1,
       condition == "risk_averse"  & treatment == "safe" & control != "safe" ~ 1,
+      TRUE ~ 0),
+    move_away_any = dplyr::case_when(
+      condition == "risk_seeking" & treatment != "risky" & control == "risky" ~ 1,
+      condition == "risk_averse"  & treatment != "safe" & control == "safe" ~ 1,
+      TRUE ~ 0),
+    move_away_oppo = dplyr::case_when(
+      condition == "risk_seeking" & treatment == "safe" & control == "risky" ~ 1,
+      condition == "risk_averse"  & treatment == "risky" & control == "safe" ~ 1,
+      TRUE ~ 0),
+    move_away_decoy = dplyr::case_when(
+      condition == "risk_seeking" & treatment == "decoy" & control == "risky" ~ 1,
+      condition == "risk_averse"  & treatment == "decoy" & control == "safe" ~ 1,
       TRUE ~ 0)
   )
 
