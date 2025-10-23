@@ -14,7 +14,7 @@ library(estimatr)
 library(lme4)
 library(patchwork)
 
-knitr::opts_chunk$set(fig.width = 8, fig.height = 7)
+knitr::opts_chunk$set(fig.width = 11, fig.height = 7)
 knitr::opts_chunk$set(warning = FALSE)
 
 study1 <- readRDS(here::here("data/study1.Rds"))
@@ -31,7 +31,7 @@ pilot1 <- readRDS(here::here("data/study1_change.Rds"))
 
 
 
-## Cluster SE - Negative Preference Reversal (Treatment)
+## Cluster SE - No and Opposite Preference Reversal (Treatment)
 ```{r}
 library(dplyr)
 library(ggplot2)
@@ -103,17 +103,20 @@ pref_rev <- tibble(
 ggplot(pref_rev, aes(x = lottery, y = diff)) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
   geom_errorbar(aes(ymin = ci_low, ymax = ci_high),
-                width = 0.15, linewidth = 0.6, color = "gray30") +
+                width = 0.15, linewidth = 0.9, color = "gray30") +
   geom_point(size = 4, color = "black") +
   geom_line(aes(group = 1), color = "gray50", linewidth = 0.8) +
-  coord_cartesian(ylim = c(-0.15, 0.15), expand = 0) +
+  coord_cartesian(ylim = c(-0.13, 0.13), expand = 0) +
   labs(
     x = "",
-    y = "Propotion of choosing when it is focal - when it is nonfocal",
-    title = "Decoy Targeting Risky Lottery v.s. Decoy Targeting Risky Lottery ",
-    subtitle = "95% CI clustered by participant"
+    y = "P(Chosen|when it is focal) - P(Chosen|when it is nonfocal)",
+    title = "Treatment Risky Decoy v.s. Treatment Safe Decoy",
+    subtitle = "95% CI clustered by participant",
+    size=16,
+    face="bold"
+    
   ) +
-  theme_minimal(base_size = 13) +
+  theme_minimal(base_size = 16) +
   theme(
     panel.grid.minor = element_blank(),
     plot.title = element_text(face = "bold")
@@ -295,7 +298,7 @@ ggplot(pref_rev_pairs, aes(x = factor(pair), y = diff, color = lottery, group = 
 
 
 # Attraction Effect: Treatment vs. Control
-```{r}
+```{r, fig.width = 14, fig.height = 7}
 library(dplyr)
 library(ggplot2)
 library(clubSandwich)
@@ -369,17 +372,17 @@ pref_rev <- tibble(
 p_risk_averse<-ggplot(pref_rev, aes(x = lottery, y = diff)) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
   geom_errorbar(aes(ymin = ci_low, ymax = ci_high),
-                width = 0.15, linewidth = 0.6, color = "gray30") +
+                width = 0.15, linewidth = 0.9, color = "gray30") +
   geom_point(size = 4, color = "black") +
   geom_line(aes(group = 1), color = "gray50", linewidth = 0.8) +
   coord_cartesian(ylim = c(-0.15, 0.15), expand = 0) +
   labs(
     x = "",
-    y = "Propotion of Choosing with Treatment Decoy - with Control Decoy",
-    title = "Treatment decoy targeting Safe lottery v.s. Control decoy",
+    y = "P(Chosen|Treatment Decoy) v.s. P(Chosen|Control Decoy)",
+    title = "Treatment Safe Decoy v.s. Control Decoy",
     subtitle = "95% CI clustered by participant"
   ) +
-  theme_minimal(base_size = 13) +
+  theme_minimal(base_size = 16) +
   theme(
     panel.grid.minor = element_blank(),
     plot.title = element_text(face = "bold")
@@ -453,17 +456,17 @@ pref_rev1 <- tibble(
 p_risk_seeking<-ggplot(pref_rev1, aes(x = lottery, y = diff)) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
   geom_errorbar(aes(ymin = ci_low, ymax = ci_high),
-                width = 0.15, linewidth = 0.6, color = "gray30") +
+                width = 0.15, linewidth = 0.9, color = "gray30") +
   geom_point(size = 4, color = "black") +
   geom_line(aes(group = 1), color = "gray50", linewidth = 0.8) +
   coord_cartesian(ylim = c(-0.15, 0.15), expand = 0) +
   labs(
     x = "",
-    y = "Propotion of Choosing with Treatment Decoy - with Control Decoy",
-    title = "Treatment decoy targeting Risky lottery v.s. Control decoy",
+    y = "",
+    title = "Treatment Risky Decoy v.s. Control Decoy",
     subtitle = "95% CI clustered by participant"
   ) +
-  theme_minimal(base_size = 13) +
+  theme_minimal(base_size = 16) +
   theme(
     panel.grid.minor = element_blank(),
     plot.title = element_text(face = "bold")

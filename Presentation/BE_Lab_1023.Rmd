@@ -1,0 +1,1086 @@
+---
+output:
+  beamer_presentation:
+    theme: "Frankfurt"
+    colortheme: "orchid"
+    slide_level: 3
+    includes:
+      in_header:
+        beamer_template.txt
+    keep_tex: true
+classoption: aspectratio=169
+editor_options: 
+  chunk_output_type: console
+---
+\title{Attraction Effect in Risky Choices}
+\author{Yi-tsen Liao}
+\institute{Carnegie Mellon University Social Decision Science}
+\date{Sep 29, 2025\\BDR Lab Meeting}
+
+\maketitle
+
+# Introduction
+```{r setup, include = F}
+library(magrittr)
+set.seed(2000)
+
+knitr::opts_chunk$set(echo = F, message = F, warning = F,
+                      fig.width = 5.5, fig.height = 2.5,
+                      fig.align = "right")
+  
+study1 <- readRDS(here::here("data/study1.Rds"))
+study1_complete <- readRDS(here::here("data/study1_complete.Rds"))
+study1_change <- readRDS(here::here("data/study1_change.Rds"))
+
+
+```
+
+## Intro
+### Context Effect
+\begin{itemize}
+  \item When choosing among options with multiple attributes
+  \pause
+  \item We often face difficult situations where one option is better in some domains,
+  \pause
+  \item while the alternative is better in the other domains
+\end{itemize}
+
+\vfill
+
+\begin{center}
+\pause
+  \textbf{Choosing partner, houses hunting, buying cars...}
+\end{center}
+
+
+### Context Effect
+\begin{center}
+  \textbf{These choices may be influenced by other available options}
+\end{center}
+
+\pause
+\begin{itemize}
+  \item An option may be viewed differently when it is evaluated in isolation v.s. when it is jointly evaluated with other options (Hsee et al, 1999)
+  \pause
+  \item When making choices among options with multiple "aspects", we often compare them attribute by attribute (Tversky, 1972)
+  \pause
+  \item A choice between two options is affected by the
+introduction of a third option (Trueblood et al, 2014)
+\end{itemize}
+
+
+
+### Context Effect
+\begin{center}
+  \textbf{Types of context effects vary by how the third option is constructed}
+\end{center}
+
+\pause
+\begin{itemize}
+  \item Attraction effect (Huber et al, 1982)
+  \begin{itemize}
+    \item The third option ("Decoy") is similar but inferior to the focal option 
+    \item which enhances the probability of choosing the "similar but better" focal option
+  \end{itemize}
+  \pause
+  \item Similarity effect (Tversky, 1972)
+  \begin{itemize}
+    \item The third option is similar to the non-focal option and DM is indifferent to all three options
+    \item which enhances the probability of choosing the "unique" focal option
+  \end{itemize}
+  \pause
+  \item Compromise effect (Simonson, 1989)
+  \begin{itemize}
+    \item The third is an extreme alternative to the focal option and DM is indifferent to all three options
+    \item which enhances the probability of choosing the "moderate" focal option
+  \end{itemize}
+\end{itemize}
+
+\vfill
+
+\begin{center}
+\pause
+  \textbf{In this study, we focus on the attraction effect!}
+\end{center}
+
+
+### Attraction Effect
+\begin{center}
+  \textbf{Types of attraction effects also vary by how the "decoy" is constructed}
+\end{center}
+
+\pause
+\begin{itemize}
+  \item Frequency decoy
+  \begin{itemize}
+    \item The decoy is worse than the focal option in its \textbf{weak} attribute
+  \end{itemize}
+  \pause
+  \item Range decoy
+  \begin{itemize}
+    \item The decoy is worse than the focal option in its \textbf{strong} attribute
+  \end{itemize}
+  \pause
+  \item Range-Frequency decoy
+  \begin{itemize}
+    \item The decoy is worse than the focal option in \textbf{all} attributes
+  \end{itemize}
+\end{itemize}
+  
+### Literatures on Attraction Effect
+\begin{itemize}
+  \pause
+  \item Less studies on the mechanism of how the attraction effect
+  \pause
+  \item Often compare between focal and non-focal option, instead of a control
+  \pause
+  \item Often assume these different types of decoys work in the same way
+  \pause
+  \item Different theories may predict different choices given the same choice set
+\end{itemize}
+
+### Application of Attraction Effect
+\begin{center}
+  \textbf{In pricing}
+\end{center}
+\begin{center}
+  \includegraphics[width=0.6\textwidth]{intro_pricing.png}
+\end{center}
+
+\vfill
+\hfill \tiny Source: @UXMental https://www.instagram.com/p/CsG2uBCNxO6/
+
+### Application of Attraction Effect
+\begin{center}
+  \textbf{In how we evaluate "beauty"}
+\end{center}
+\begin{center}
+  \includegraphics[width=0.6\textwidth]{intro_beauty.png}
+\end{center}
+
+\vfill
+\hfill \tiny Source: @Dan Ariely https://www.youtube.com/watch?v=9X68dm92HVI
+
+### Application of Attraction Effect
+\begin{center}
+  \textbf{In visual perception...}
+\end{center}
+\begin{center}
+  \includegraphics[width=0.6\textwidth]{intro_perception.png}
+\end{center}
+
+\vfill
+\hfill \tiny Trueblood, J. S., Brown, S. D., Heathcote, A., & Busemeyer, J. R. (2013). Not just for consumers: Context effects are fundamental to decision making. Psychological science, 24(6), 901-908.
+
+### Limits of Studies on Attraction Effect
+\begin{itemize}
+  \pause
+  \item Less studies on the mechanism of how attraction effect works exactly
+  \pause
+  \item Often compare between focal and non-focal option, instead of a control
+  \pause
+  \item Often assume these different types of decoys work in the same way
+  \pause
+  \item Different theories may predict different choices given the same choice set
+\end{itemize}
+
+### Limits of Studies on Attraction Effect
+\begin{itemize}
+  \item Has been widely studied in various fields, with real-world application
+  \pause
+  \item Caveat: they may not always work (Frederick et al, 2014)
+  \pause
+  \item Restricted to very limited number of options (most commonly 3)
+  \pause
+  \item with very limited number of attributes (most commonly 2)
+\end{itemize}
+
+
+\vfill
+\begin{center}
+  \textbf{What are the settings that are simplistic enough to fit into these narrow criteria?}
+\end{center}
+
+\begin{center}
+  \pause
+  \textbf{Good old lottery choices :)}
+\end{center}
+
+### Risky Choices
+\begin{itemize}
+  \item People have a hard time thinking about risk
+  \pause
+  \item And we have a long history studying the inconsistency in choices under uncertainty
+  \pause
+  \item A lottery in some sense is an option with only two attributes: 
+  \pause
+  \begin{itemize}
+    \item A set of prizes
+    \item And a set of probabilities associated with the prizes
+  \end{itemize}
+\end{itemize}
+
+
+\vfill
+\begin{center}
+\pause
+  \textbf{Choices among lotteries are essentially tradeoffs between these two attributes}
+\end{center}
+
+# Design
+### Simple Two-state No-Lose Lotteries
+
+\begin{itemize}
+  \item Positive payoff in one state, nothing in the other
+  \pause
+  \item Choose among three lotteries: Focal, Non-focal and Decoy
+  \begin{itemize}
+    \pause
+    \item Focal and Non-focal lotteries are symmetrical
+    \pause
+    \item Treatment Decoy: same winning probability, 1/2 of the payoff
+    \pause
+    \item Control Decoy has 50\% of winning probability, same expected payoff as the Treatment
+  \end{itemize}
+  \pause
+  \item Decisions are incentivized!
+  
+\end{itemize}
+
+\vfill
+\hfill \tiny *All studies preregistered on AsPredicted
+
+
+### Study 1: Control Trails
+\begin{center}
+  \includegraphics[width=1\textwidth]{Control.png}
+\end{center}
+
+### Study 1: Treatment Trails: targets Safe lottery
+\begin{center}
+  \includegraphics[width=1\textwidth]{Treatment_Risk_Averse.png}
+\end{center}
+
+### Study 1: Treatment Trails: targets Risky lottery
+\begin{center}
+  \includegraphics[width=1\textwidth]{Treatment_Risk_Seeking.png}
+\end{center}
+
+### Study 1: Design
+\begin{itemize}
+  \item 600 participants from Prolific
+  \pause
+  \item Within subject treatment
+  \begin{itemize}
+    \pause
+    \item 10 trails of lottery decision
+    \item 5 unique pairs of Focal and Non-focal lotteries
+    \item Along with either a Treatment or a Control Decoy
+  \end{itemize}
+  \pause
+  \item Between subject condition
+  \begin{itemize}
+    \pause
+    \item \textbf{Risky} Treatment Decoy targets the risky lottery
+    \item \textbf{Safe} Treatment Decoy targets the safe lottery
+  \end{itemize}
+  \pause
+  \item Exclude participants who choose the decoy more than 5 times
+\end{itemize}
+
+\vfill
+\hfill \tiny *All studies preregistered on AsPredicted
+
+### Different levels of tradeoffs
+\begin{itemize}
+  \item 95\% of 20¢; 20\% of 95¢
+  \item 90\% of 25¢; 25\% of 90¢
+  \item 85\% of 30¢; 30\% of 85¢
+  \item 80\% of 35¢; 35\% of 80¢
+  \item 75\% of 40¢; 40\% of 75¢
+\end{itemize}
+
+### Study 1: Hypothesis
+\begin{itemize}
+  \item Can the Treatment Decoy increase the likelihood of choosing the Focal lottery?
+  \pause
+  \item Does the effect depend on specific characteristic in lottery pairs?
+  \pause
+  \item Whether Treatment Decoy is better at enhancing risky lotteries or safe lotteries?
+\end{itemize}
+
+# Results
+
+### Study 1: Seperated by Conditions
+```{r}
+study1 %>%
+  dplyr::mutate(condition = dplyr::recode_factor(condition,
+                                                             'risk_averse' = 'Safe condition',
+                                                             'risk_seeking' = 'Risky condition'),
+                treatment = dplyr::recode_factor(treatment,
+                                                             'control' = 'Control decoy',
+                                                             'treatment' = 'Treatment decoy')) %>%
+  dplyr::group_by(condition, treatment) %>%
+  dplyr::summarize(mean = mean(choice),
+                   n = dplyr::n(),
+                   sd = sd(choice),
+                   ci = qnorm(0.975) * sd/sqrt(n)) %>%
+  ggplot2::ggplot(ggplot2::aes(x = condition,
+                               y = mean,
+                               fill = treatment)) +
+  ggplot2::geom_col(position = 'dodge') +
+  ggplot2::geom_text(ggplot2::aes(x = condition,
+                                  y = 0.05,
+                                  label = paste0(round(mean*100, 2), "%", "\n",
+                                                 "n = ", n)),
+                     color = 'white',
+                     lineheight = 0.75,
+                     size = 2.5,
+                     position = ggplot2::position_dodge(0.9)) +
+  ggplot2::coord_cartesian(ylim = c(0, 1),
+                           expand = 0) +
+  ggplot2::scale_fill_manual(values = c('#998ec3', '#f1a340')) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = mean - ci,
+                                      ymax = mean + ci),
+                         position = ggplot2::position_dodge(0.9),
+                         width = 0.2) +
+  papaja::theme_apa() +
+  ggplot2::theme(legend.position = c(1, 1.1),
+                 legend.justification = c(1, 1),
+                 legend.direction = "horizontal",
+                 legend.background = ggplot2::element_rect(fill = "transparent", color = NA),
+                 legend.text = ggplot2::element_text(size = 6),
+                 legend.title = ggplot2::element_blank(),
+                 axis.title.x = ggplot2::element_blank(),
+                 axis.title.y = ggplot2::element_blank(),
+                 axis.ticks.x = ggplot2::element_blank(),
+                 strip.placement = "outside")+
+  ggplot2::scale_y_continuous("Proportion Choosing Focal Lottery")
+```
+
+### Study 1: No and Opposite Preference Reversal (Treatment)
+
+```{r, include=FALSE}
+library(dplyr)
+library(ggplot2)
+library(clubSandwich)
+library(broom)
+
+# Compute participant-level means
+clustered_estimates <- study1_complete %>%
+  filter(treatment == "treatment") %>%
+  mutate(
+    choose_risky = ifelse(raw_choice == "risky", 1, 0),
+    choose_safe  = ifelse(raw_choice == "safe", 1, 0),
+    choose_decoy  = ifelse(raw_choice == "decoy", 1, 0)
+  ) %>%
+  group_by(condition, PROLIFIC_PID) %>%
+  summarise(
+    risky_rate = mean(choose_risky),
+    safe_rate = mean(choose_safe),
+    decoy_rate = mean(choose_decoy),
+    .groups = "drop"
+  )
+
+# Ensure condition is a factor with reference = "risk_averse"
+clustered_estimates <- clustered_estimates %>%
+  mutate(condition = factor(condition, levels = c("risk_averse", "risk_seeking")))
+
+# Fit linear models
+mod_risky <- lm(risky_rate ~ condition, data = clustered_estimates)
+mod_safe  <- lm(safe_rate  ~ condition, data = clustered_estimates)
+mod_decoy  <- lm(decoy_rate  ~ condition, data = clustered_estimates)
+
+# Clustered SEs
+risky_cl <- coef_test(mod_risky, vcov = "CR2", cluster = clustered_estimates$PROLIFIC_PID)
+safe_cl  <- coef_test(mod_safe,  vcov = "CR2", cluster = clustered_estimates$PROLIFIC_PID)
+decoy_cl  <- coef_test(mod_decoy,  vcov = "CR2", cluster = clustered_estimates$PROLIFIC_PID)
+
+# Inspect result tables
+print(risky_cl)
+print(safe_cl)
+print(decoy_cl)
+
+# Helper function to safely extract coefficient and SE
+get_coef_info <- function(tbl) {
+  tbl %>%
+    dplyr::filter(Coef != "(Intercept)") %>%
+    dplyr::summarise(
+      diff = beta,
+      se   = SE
+    ) %>%
+    as.list()
+}
+
+# Extract risky and safe info
+risky_info <- get_coef_info(risky_cl)
+safe_info  <- get_coef_info(safe_cl)
+decoy_info  <- get_coef_info(decoy_cl)
+
+# Combine into preference reversal table
+pref_rev <- tibble(
+  lottery = c("Risky lottery", "Safe lottery","Decoy"),
+  diff = c(risky_info$diff, -safe_info$diff, decoy_info$diff),  # flip sign for safe
+  se = c(risky_info$se, safe_info$se, decoy_info$se)
+) %>%
+  mutate(
+    ci_low = diff - 1.96 * se,
+    ci_high = diff + 1.96 * se
+  )
+
+Preference_Reversal_P<-ggplot(pref_rev, aes(x = lottery, y = diff)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+  geom_errorbar(aes(ymin = ci_low, ymax = ci_high),
+                width = 0.15, linewidth = 0.6, color = "gray30") +
+  geom_point(size = 4, color = "black") +
+  geom_line(aes(group = 1), color = "gray50", linewidth = 0.8) +
+  coord_cartesian(ylim = c(-0.13, 0.13), expand = 0) +
+  labs(
+    x = "",
+    y = "P(Focal) - P(Nonfocal)",
+    title = "Treatment Risky Decoy v.s. Treatment Safe Decoy",
+    size=20,
+    face="bold"
+    
+  ) +
+  theme_minimal(base_size = 10) +
+  theme(
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(face = "bold")
+  )
+```
+```{r, fig.width=5.5, fig.height=3}
+Preference_Reversal_P
+```
+
+### No Heterogenous Effect Across Pairs
+```{r, include=FALSE}
+library(dplyr)
+library(ggplot2)
+library(clubSandwich)
+library(broom)
+
+# Step 1. Compute participant-level means per pair
+clustered_estimates_pairs <- study1_complete %>%
+  filter(treatment == "treatment") %>%
+  mutate(
+    choose_risky = ifelse(raw_choice == "risky", 1, 0),
+    choose_safe  = ifelse(raw_choice == "safe", 1, 0)
+  ) %>%
+  group_by(condition, PROLIFIC_PID, pair) %>%  # pair_id = unique trial set
+  summarise(
+    risky_rate = mean(choose_risky),
+    safe_rate  = mean(choose_safe),
+    .groups = "drop"
+  ) %>%
+  mutate(condition = factor(condition, levels = c("risk_averse", "risk_seeking")))
+
+# Step 2. Define helper to fit models with clustered SEs per pair
+get_clustered_diff <- function(df, outcome) {
+  mod <- lm(reformulate("condition", outcome), data = df)
+  cl  <- coef_test(mod, vcov = "CR2", cluster = df$PROLIFIC_PID)
+  cl_df <- as.data.frame(cl)
+  est <- cl_df |> dplyr::filter(Coef == "conditionrisk_seeking")
+  tibble(
+    diff = est$beta,
+    se = est$SE
+  )
+}
+
+# Step 3. Loop through each pair to extract both risky & safe diffs
+pair_results <- clustered_estimates_pairs %>%
+  group_by(pair) %>%
+  summarise(
+    risky_diff = get_clustered_diff(cur_data(), "risky_rate")$diff,
+    risky_se   = get_clustered_diff(cur_data(), "risky_rate")$se,
+    safe_diff  = get_clustered_diff(cur_data(), "safe_rate")$diff,
+    safe_se    = get_clustered_diff(cur_data(), "safe_rate")$se,
+    .groups = "drop"
+  )
+
+# Step 4. Reshape and flip safe sign for consistency
+pref_rev_pairs <- pair_results %>%
+  mutate(safe_diff = -safe_diff) %>%
+  tidyr::pivot_longer(
+    cols = c(risky_diff, safe_diff, risky_se, safe_se),
+    names_to = c("lottery", ".value"),
+    names_pattern = "(risky|safe)_(diff|se)"
+  ) %>%
+  mutate(
+    lottery = factor(lottery, levels = c("risky", "safe"),
+                     labels = c("Risky lottery", "Safe lottery")),
+    ci_low = diff - 1.96 * se,
+    ci_high = diff + 1.96 * se
+  )
+
+# Step 5. Plot: side-by-side effects by pair
+Hetero_P<-ggplot(pref_rev_pairs, aes(x = factor(pair), y = diff, color = lottery, group = lottery)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+  geom_errorbar(aes(ymin = ci_low, ymax = ci_high),
+                position = position_dodge(width = 0.4), width = 0.15) +
+  geom_point(position = position_dodge(width = 0.4), size = 3) +
+  geom_line(position = position_dodge(width = 0.4)) +
+  coord_cartesian(ylim = c(-0.15, 0.15), expand = 0) +
+  scale_color_manual(values = c("#3E8EDE", "#E69F00")) +
+  labs(
+    x = "Lottery pair",
+    y = "P(Focal) - P(Nonfocal)",
+    title = "Treatment Risky Decoy v.s. Treatment Safe Decoy",
+    color = "Lottery type",
+  ) +
+  theme_minimal(base_size = 10) +
+  theme(
+    legend.position = "top",
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(face = "bold"),
+    axis.text.x = element_text(size = 11)
+  )
+```
+
+```{r, fig.width=5.5, fig.height=3}
+Hetero_P
+```
+
+
+### Study 1: Risky Decoy: Treatment v.s. Control
+```{r,include=FALSE}
+clustered_estimates1 <- study1_complete %>%
+  filter(condition == "risk_seeking") %>%
+  mutate(
+    choose_risky = ifelse(raw_choice == "risky", 1, 0),
+    choose_safe  = ifelse(raw_choice == "safe", 1, 0),
+    choose_decoy = ifelse(raw_choice == "decoy", 1, 0)
+  ) %>%
+  group_by(treatment, PROLIFIC_PID) %>%
+  summarise(
+    risky_rate = mean(choose_risky),
+    safe_rate = mean(choose_safe),
+    decoy_rate = mean(choose_decoy),
+    .groups = "drop"
+  )
+
+# Ensure condition is a factor with reference = "risk_averse"
+clustered_estimates1 <- clustered_estimates1 %>%
+  mutate(treatment = factor(treatment, levels = c("control", "treatment")))
+
+# Fit linear models
+mod_risky1 <- lm(risky_rate ~ treatment, data = clustered_estimates1)
+mod_safe1  <- lm(safe_rate  ~ treatment, data = clustered_estimates1)
+mod_decoy1  <- lm(decoy_rate  ~ treatment, data = clustered_estimates1)
+
+
+# Clustered SEs
+risky_cl1 <- coef_test(mod_risky1, vcov = "CR2", cluster = clustered_estimates1$PROLIFIC_PID)
+safe_cl1  <- coef_test(mod_safe1,  vcov = "CR2", cluster = clustered_estimates1$PROLIFIC_PID)
+decoy_cl1  <- coef_test(mod_decoy1,  vcov = "CR2", cluster = clustered_estimates1$PROLIFIC_PID)
+
+# Inspect result tables
+print(risky_cl1)
+print(safe_cl1)
+print(decoy_cl1)
+
+# Helper function to safely extract coefficient and SE
+get_coef_info <- function(tbl) {
+  tbl %>%
+    dplyr::filter(Coef != "(Intercept)") %>%
+    dplyr::summarise(
+      diff = beta,
+      se   = SE
+    ) %>%
+    as.list()
+}
+
+# Extract risky and safe info
+risky_info1 <- get_coef_info(risky_cl1)
+safe_info1  <- get_coef_info(safe_cl1)
+decoy_info1  <- get_coef_info(decoy_cl1)
+
+# Combine into preference reversal table
+pref_rev1 <- tibble(
+  lottery = c("Risky lottery", "Safe lottery", "Decoy"),
+  diff = c(risky_info1$diff, safe_info1$diff, decoy_info1$diff),  # flip sign for safe
+  se = c(risky_info1$se, safe_info1$se, decoy_info1$se)
+) %>%
+  mutate(
+    ci_low = diff - 1.96 * se,
+    ci_high = diff + 1.96 * se
+  )
+
+p_risk_seeking<-ggplot(pref_rev1, aes(x = lottery, y = diff)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+  geom_errorbar(aes(ymin = ci_low, ymax = ci_high),
+                width = 0.15, linewidth = 0.6, color = "gray30") +
+  geom_point(size = 4, color = "black") +
+  geom_line(aes(group = 1), color = "gray50", linewidth = 0.8) +
+  coord_cartesian(ylim = c(-0.15, 0.15), expand = 0) +
+  labs(
+    x = "",
+    y = "P(Treatment) - P(Control)",
+    title = "Treatment Risky Decoy v.s. Control Decoy",
+  ) +
+  theme_minimal(base_size = 10) +
+  theme(
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(face = "bold")
+  )
+
+
+```
+```{r, fig.width=5.5, fig.height=3}
+p_risk_seeking
+```
+### Study 1: Safe Decoy: Treatment vs. Control
+```{r, include=FALSE}
+library(dplyr)
+library(ggplot2)
+library(clubSandwich)
+library(broom)
+
+# Risk_Averse Condition
+
+# Compute participant-level means
+clustered_estimates <- study1_complete %>%
+  filter(condition == "risk_averse") %>%
+  mutate(
+    choose_risky = ifelse(raw_choice == "risky", 1, 0),
+    choose_safe  = ifelse(raw_choice == "safe", 1, 0),
+    choose_decoy = ifelse(raw_choice == "decoy", 1, 0)
+  ) %>%
+  group_by(treatment, PROLIFIC_PID) %>%
+  summarise(
+    risky_rate = mean(choose_risky),
+    safe_rate = mean(choose_safe),
+    decoy_rate = mean(choose_decoy),
+    .groups = "drop"
+  )
+
+# Ensure condition is a factor with reference = "risk_averse"
+clustered_estimates <- clustered_estimates %>%
+  mutate(treatment = factor(treatment, levels = c("control", "treatment")))
+
+# Fit linear models
+mod_risky <- lm(risky_rate ~ treatment, data = clustered_estimates)
+mod_safe  <- lm(safe_rate  ~ treatment, data = clustered_estimates)
+mod_decoy  <- lm(decoy_rate  ~ treatment, data = clustered_estimates)
+
+
+# Clustered SEs
+risky_cl <- coef_test(mod_risky, vcov = "CR2", cluster = clustered_estimates$PROLIFIC_PID)
+safe_cl  <- coef_test(mod_safe,  vcov = "CR2", cluster = clustered_estimates$PROLIFIC_PID)
+decoy_cl  <- coef_test(mod_decoy,  vcov = "CR2", cluster = clustered_estimates$PROLIFIC_PID)
+
+# Inspect result tables
+print(risky_cl)
+print(safe_cl)
+print(decoy_cl)
+
+# Helper function to safely extract coefficient and SE
+get_coef_info <- function(tbl) {
+  tbl %>%
+    dplyr::filter(Coef != "(Intercept)") %>%
+    dplyr::summarise(
+      diff = beta,
+      se   = SE
+    ) %>%
+    as.list()
+}
+
+# Extract risky and safe info
+risky_info <- get_coef_info(risky_cl)
+safe_info  <- get_coef_info(safe_cl)
+decoy_info  <- get_coef_info(decoy_cl)
+
+# Combine into preference reversal table
+pref_rev <- tibble(
+  lottery = c("Risky lottery", "Safe lottery", "Decoy"),
+  diff = c(risky_info$diff, safe_info$diff, decoy_info$diff),  # flip sign for safe
+  se = c(risky_info$se, safe_info$se, decoy_info$se)
+) %>%
+  mutate(
+    ci_low = diff - 1.96 * se,
+    ci_high = diff + 1.96 * se
+  )
+
+p_risk_averse<-ggplot(pref_rev, aes(x = lottery, y = diff)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+  geom_errorbar(aes(ymin = ci_low, ymax = ci_high),
+                width = 0.15, linewidth = 0.6, color = "gray30") +
+  geom_point(size = 4, color = "black") +
+  geom_line(aes(group = 1), color = "gray50", linewidth = 0.8) +
+  coord_cartesian(ylim = c(-0.15, 0.15), expand = 0) +
+  labs(
+    x = "",
+    y = "P(Treatment) - P(Control)",
+    title = "Treatment Safe Decoy v.s. Control Decoy",
+  ) +
+  theme_minimal(base_size = 10) +
+  theme(
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(face = "bold")
+  )
+```
+```{r, fig.width=5.5, fig.height=3}
+p_risk_averse
+```
+
+
+### Study 1: Conclusion
+\begin{flushleft}
+  \textbf{No significant preference reversal}
+  \begin{itemize}
+    \item Compared with risky decoy, Safe decoy slightly \textit{reduced} safe choice
+    \item AE not robust to visual representation (Frederick et al., 2014)
+  \end{itemize}
+\end{flushleft}
+
+\pause
+\begin{flushleft}
+  \textbf{No heterogenous effect across pairs characteristics}
+  \begin{itemize}
+    \item Distance between competing options didn't matter
+    \item No support for similar effect on perceptual task (Farmer et al., 2016)
+    \item Similarity doesn't make the preference easier shift
+  \end{itemize}
+\end{flushleft}
+
+\pause
+\begin{flushleft}
+  \textbf{Control decoy is "inadvertently" dominated by safe lottery on both attributes}
+  \begin{itemize}
+    \item Control decoy \textit{boosted} safe choices more than safe decoy
+    \item Must decoys be strictly dominated in \textit{both} attributes?
+    \item Couldn't similarity itself trigger comparison?
+  \end{itemize}
+\end{flushleft}
+
+### Study 1: Make One Attractive or Avoid Worst Option?
+\begin{flushleft}
+  \textbf{47\% \$23 v.s. 19\% \$57}
+  \begin{itemize}
+    \item Hard to tell which has higher EV
+    \item Decoy 19\% \$28 may work
+    \item At least I won't choose the worst option
+  \end{itemize}
+\end{flushleft}
+
+\pause
+\begin{flushleft}
+  \textbf{47\% \$23 v.s. 23\% \$47}
+  \begin{itemize}
+    \item They obviously have the same EV
+    \item Decoy 23\% \$23 may not work
+    \item When competing options are objectively equivalent
+  \end{itemize}
+\end{flushleft}
+
+\pause
+\begin{flushleft}
+  \textbf{Moving away from single choice DV}
+  \begin{itemize}
+    \item Elicit WTP?
+    \item Ask for rankings?
+    \item Allow multiple choices?
+  \end{itemize}
+\end{flushleft}
+
+
+### Moving Forwards
+\pause
+\begin{flushleft}
+  \textbf{What do you make of the results?}
+\end{flushleft}
+\begin{itemize}
+  \item Risky decoy lowered "mistake" rate
+  \item While safe decoy backfired
+\end{itemize}
+
+\pause
+\begin{flushleft}
+  \textbf{How to position this study?}
+\end{flushleft}
+\begin{itemize}
+  \item Reference-dependent risk preference
+  \item Regret theory — state-wise comparison
+  \item Heuristics and biases — reduced mistakes
+\end{itemize}
+
+\pause
+\begin{flushleft}
+  \textbf{Next step?}
+\end{flushleft}
+\begin{itemize}
+  \item Refine experimental design — a better control?
+  \item More experimental or theoretical?
+  \item Test in more realistic settings?
+\end{itemize}
+
+# Appendix
+### Study 1: Frequency table
+```{r}
+
+study1_complete <- study1_complete %>%
+  dplyr::mutate(
+    condition = dplyr::recode_factor(
+      condition,
+      'risk_averse' = 'Safe',
+      'risk_seeking' = 'Risky'
+    ),
+    condition = factor(condition, levels = c("Safe", "Risky")),  # ⬅ enforce order
+    treatment = dplyr::recode_factor(
+      treatment,
+      'control' = 'Control',
+      'treatment' = 'Treatment'
+    ),
+    treatment = factor(treatment, levels = c("Control", "Treatment")) # optional
+  )
+# Create table of counts
+tab <- as.data.frame(table(
+  Treatment = study1_complete$treatment,
+  Choice    = study1_complete$raw_choice,
+  Condition = study1_complete$condition
+))
+
+# Pivot wider
+tab_wide <- tidyr::pivot_wider(
+  tab,
+  names_from = Choice,
+  values_from = Freq
+)
+
+# ---- Convert to percentages ----
+tab_wide <- tab_wide %>%
+  dplyr::rowwise() %>%
+  dplyr::mutate(
+    total = sum(dplyr::c_across(where(is.numeric))),
+    dplyr::across(where(is.numeric), ~ paste0(round(.x / total * 100, 1), "\\%"))
+  ) %>%
+  dplyr::ungroup() %>%
+  dplyr::select(-total)# drop total if you don’t want it shown
+
+tab_wide <- tab_wide %>%
+  dplyr::mutate(
+    risky = ifelse(
+      risky %in% c(""), 
+      kableExtra::cell_spec(risky, "latex", background = "yellow"), 
+      as.character(risky)),
+    decoy = ifelse(
+      decoy %in% c(""), 
+      kableExtra::cell_spec(decoy, "latex", background = "yellow"), 
+      as.character(decoy)
+    ))
+
+library(kableExtra)
+knitr::kable(
+  tab_wide,
+  format = "latex",
+  escape = FALSE,   # ⬅ important so LaTeX code is kept
+  booktabs = TRUE,
+  col.names = c("Treatment", "Condition", "Decoy", "Risky", "Safe")
+) %>%
+  kable_styling(position = "center")
+```
+
+\vfill
+\hfill \tiny *Full sample without excluding any participant
+
+### Appendix: Switch to Focal, Conditioned on Not Choosing Focal in Control
+```{r}
+study1_change %>%
+    dplyr::filter((control != "safe" & condition == "risk_averse")|
+                  (control != "risky" & condition == "risk_seeking"))%>%
+  dplyr::group_by(condition) %>%
+  dplyr::summarize(mean = mean(change_from_any),
+                   n = dplyr::n(),
+                   sd = sd(change_from_any),
+                   ci = qnorm(0.975) * sd/sqrt(n)) %>%
+  ggplot2::ggplot(ggplot2::aes(x = condition,
+                               y = mean,
+                               fill = condition)) +
+  ggplot2::geom_col(position = 'dodge') +
+  ggplot2::geom_text(ggplot2::aes(x = condition,
+                                  y = 0.05,
+                                  label = paste0(round(mean*100, 2), "%", "\n",
+                                                 "n = ", n)),
+                     color = 'white',
+                     lineheight = 0.75,
+                     size = 2.5,
+                     position = ggplot2::position_dodge(0.9)) +
+  ggplot2::coord_cartesian(ylim = c(0, 1),
+                           expand = 0) +
+  ggplot2::scale_fill_manual(values = c('#998ec3', '#f1a340')) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = mean - ci,
+                                      ymax = mean + ci),
+                         position = ggplot2::position_dodge(0.9),
+                         width = 0.2) +
+  papaja::theme_apa() +
+  ggplot2::theme(legend.position = c(1, 1.1),
+                 legend.justification = c(1, 1),
+                 legend.direction = "horizontal",
+                 legend.background = ggplot2::element_rect(fill = "transparent", color = NA),
+                 legend.text = ggplot2::element_text(size = 6),
+                 legend.title = ggplot2::element_blank(),
+                 axis.title.x = ggplot2::element_blank(),
+                 axis.title.y = ggplot2::element_blank(),
+                 axis.ticks.x = ggplot2::element_blank(),
+                 strip.placement = "outside")+
+  ggplot2::scale_y_continuous("Proportion Choosing Focal Lottery")
+
+```
+
+### Appendix: Move away from Focal, Conditioned on Already Choosing Focal in Control
+```{r}
+study1_change %>%
+    dplyr::filter((control == "safe" & condition == "risk_averse")|
+                  (control == "risky" & condition == "risk_seeking"))%>%
+  dplyr::group_by(condition) %>%
+  dplyr::summarize(mean = mean(move_away_oppo),
+                   n = dplyr::n(),
+                   sd = sd(move_away_oppo),
+                   ci = qnorm(0.975) * sd/sqrt(n)) %>%
+  ggplot2::ggplot(ggplot2::aes(x = condition,
+                               y = mean,
+                               fill = condition)) +
+  ggplot2::geom_col(position = 'dodge') +
+  ggplot2::geom_text(ggplot2::aes(x = condition,
+                                  y = 0.05,
+                                  label = paste0(round(mean*100, 2), "%", "\n",
+                                                 "n = ", n)),
+                     color = 'white',
+                     lineheight = 0.75,
+                     size = 2.5,
+                     position = ggplot2::position_dodge(0.9)) +
+  ggplot2::coord_cartesian(ylim = c(0, 1),
+                           expand = 0) +
+  ggplot2::scale_fill_manual(values = c('#998ec3', '#f1a340')) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = mean - ci,
+                                      ymax = mean + ci),
+                         position = ggplot2::position_dodge(0.9),
+                         width = 0.2) +
+  papaja::theme_apa() +
+  ggplot2::theme(legend.position = c(1, 1.1),
+                 legend.justification = c(1, 1),
+                 legend.direction = "horizontal",
+                 legend.background = ggplot2::element_rect(fill = "transparent", color = NA),
+                 legend.text = ggplot2::element_text(size = 6),
+                 legend.title = ggplot2::element_blank(),
+                 axis.title.x = ggplot2::element_blank(),
+                 axis.title.y = ggplot2::element_blank(),
+                 axis.ticks.x = ggplot2::element_blank(),
+                 strip.placement = "outside")+
+  ggplot2::scale_y_continuous("Proportion Choosing Focal Lottery")
+
+```
+
+### Appendix: Heat Map -- Safe Condition
+
+```{r}
+study1_change_safe <- study1_change %>%
+  dplyr::filter(condition == "risk_averse")%>%
+  dplyr::mutate(
+    control = dplyr::recode_factor(
+      control,
+      'safe' = 'Safe',
+      'risky' = 'Risky',
+      'decoy' = 'Decoy'),
+    control = factor(control, levels = c("Decoy", "Risky", "Safe")),
+    treatment = dplyr::recode_factor(
+      treatment,
+      'safe' = 'Safe',
+      'risky' = 'Risky',
+      'decoy' = 'Decoy'),
+    treatment = factor(treatment, levels = c("Decoy", "Risky", "Safe")))
+
+# Create table of counts
+tab_safe <- as.data.frame(table(
+  Control = study1_change_safe$control,
+  Treatment = study1_change_safe$treatment))
+
+# Pivot wider
+tab_wide_safe <- tidyr::pivot_wider(
+  tab_safe,
+  names_from = Treatment,
+  values_from = Freq)
+
+# ---- Convert to percentages ----
+tab_wide_safe <- tab_wide_safe %>%
+  dplyr::rowwise() %>%
+  dplyr::mutate(
+    total = sum(dplyr::c_across(where(is.numeric))),
+    dplyr::across(where(is.numeric), ~ paste0(round(.x / total * 100, 1), "\\%"))
+  ) %>%
+  dplyr::ungroup() %>%
+  dplyr::select(-total)# drop total if you don’t want it shown
+
+
+
+library(kableExtra)
+knitr::kable(
+  tab_wide_safe,
+  format = "latex",
+  escape = FALSE,   # ⬅ important so LaTeX code is kept
+  booktabs = TRUE,
+  col.names = c("Control", "Decoy", "Risky", "Safe"),
+  caption = "Safe condition"
+) %>%
+  kable_styling(position = "center")
+
+
+
+```
+
+### Appendix: Heat Map -- Risky Condition
+
+```{r}
+study1_change_risky <- study1_change %>%
+  dplyr::filter(condition == "risk_seeking")%>%
+  dplyr::mutate(
+    control = dplyr::recode_factor(
+      control,
+      'safe' = 'Safe',
+      'risky' = 'Risky',
+      'decoy' = 'Decoy'),
+    control = factor(control, levels = c("Decoy", "Risky", "Safe")),
+    treatment = dplyr::recode_factor(
+      treatment,
+      'safe' = 'Safe',
+      'risky' = 'Risky',
+      'decoy' = 'Decoy'),
+    treatment = factor(treatment, levels = c("Decoy", "Risky", "Safe")))
+
+
+# Create table of counts
+tab_risky <- as.data.frame(table(
+    Treatment = study1_change_risky$treatment,
+  Control = study1_change_risky$control
+))
+
+# Pivot wider
+tab_wide_risky <- tidyr::pivot_wider(
+  tab_risky,
+  names_from = Treatment,
+  values_from = Freq)
+
+# ---- Convert to percentages ----
+tab_wide_risky <- tab_wide_risky %>%
+  dplyr::rowwise() %>%
+  dplyr::mutate(
+    total = sum(dplyr::c_across(where(is.numeric))),
+    dplyr::across(where(is.numeric), ~ paste0(round(.x / total * 100, 1), "\\%"))
+  ) %>%
+  dplyr::ungroup() %>%
+  dplyr::select(-total)# drop total if you don’t want it shown
+
+
+library(kableExtra)
+knitr::kable(
+  tab_wide_risky,
+  format = "latex",
+  escape = FALSE,   # ⬅ important so LaTeX code is kept
+  booktabs = TRUE,
+  col.names = c("Control", "Decoy", "Risky", "Safe"),
+  caption = "Risky condition"
+) %>%
+  kable_styling(position = "center")
+
+```
+
