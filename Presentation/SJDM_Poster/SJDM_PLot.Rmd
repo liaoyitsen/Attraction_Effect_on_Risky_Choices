@@ -100,27 +100,64 @@ pref_rev <- tibble(
     ci_high = diff + 1.96 * se
   )
 
-ggplot(pref_rev, aes(x = lottery, y = diff)) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+# Enhanced visualization for poster
+p_treatment_comparison <- ggplot(pref_rev, aes(x = lottery, y = diff, color = lottery)) +
+  # Zero line
+  geom_hline(yintercept = 0, linetype = "dotted", color = "gray60", linewidth = 0.8) +
+  
+  # Error bars
   geom_errorbar(aes(ymin = ci_low, ymax = ci_high),
-                width = 0.15, linewidth = 0.9, color = "gray30") +
-  geom_point(size = 4, color = "black") +
-  geom_line(aes(group = 1), color = "gray50", linewidth = 0.8) +
-  coord_cartesian(ylim = c(-0.13, 0.13), expand = 0) +
+                width = 0.15, linewidth = 1.1) +
+  
+  # Points
+  geom_point(size = 5, show.legend = FALSE) +
+  
+  # Add numeric labels with custom vjust by lottery
+  geom_text(aes(
+      label = sprintf("%.3f", diff),
+      color = lottery,
+      vjust = case_when(
+        lottery == "Decoy" ~ -3.5,      # bring decoy text closer
+        TRUE ~ -7                     # default for others
+      )
+    ),
+    size = 6, fontface = "bold", show.legend = F) +
+  
+  # Custom color palette (consistent with prior plots)
+  scale_color_manual(values = c(
+    "Risky lottery" = "#ff7f0e",  # orange
+    "Safe lottery"  = "#1f77b4",  # blue
+    "Decoy"         = "black"     # neutral gray
+  )) +
+  
+  # Shrink horizontal spacing
+  scale_x_discrete(expand = expansion(mult = c(0.05, 0.05))) +
+  
+  # Coordinate settings (no clipping)
+  coord_cartesian(ylim = c(-0.13, 0.13), expand = FALSE, clip = "off") +
+  
+  # Labels
   labs(
     x = "",
-    y = "P(Chosen|when it is focal) - P(Chosen|when it is nonfocal)",
-    title = "Treatment Risky Decoy v.s. Treatment Safe Decoy",
-    subtitle = "95% CI clustered by participant",
-    size=16,
-    face="bold"
-    
+    y = expression(Delta*" P(Chosen | Focal)"),
+    title = "Treatment Risky Decoy vs. Treatment Safe Decoy",
+    subtitle = "95% CI clustered by participant"
   ) +
-  theme_minimal(base_size = 16) +
+  
+  # Theme tuning
+  theme_minimal(base_size = 20) +
   theme(
     panel.grid.minor = element_blank(),
-    plot.title = element_text(face = "bold")
+    panel.grid.major.x = element_blank(),
+    axis.text.x = element_text(size = 16, face = "bold"),
+    axis.text.y = element_text(size = 14),
+    plot.title = element_text(face = "bold", size = 22, hjust = 0.5),
+    plot.subtitle = element_text(size = 14, hjust = 0.5, color = "gray40"),
+    axis.title.y = element_text(size = 16, margin = margin(r = 15)),
+    plot.margin = margin(10, 20, 25, 10)
   )
+
+p_treatment_comparison
 ```
 ## Cluster SE - No Preference Reversal (Control)
 ```{r}
@@ -270,35 +307,72 @@ pref_rev_pairs <- pair_results %>%
     ci_high = diff + 1.96 * se
   )
 
-# Step 5. Plot: side-by-side effects by pair
-ggplot(pref_rev_pairs, aes(x = factor(pair), y = diff, color = lottery, group = lottery)) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+p_hetero_pairs <- ggplot(pref_rev_pairs, 
+       aes(x = factor(pair), y = diff, color = lottery, group = lottery)) +
+  
+  # Zero line
+  geom_hline(yintercept = 0, linetype = "dotted", color = "gray60", linewidth = 0.8) +
+  
+  # Error bars
   geom_errorbar(aes(ymin = ci_low, ymax = ci_high),
-                position = position_dodge(width = 0.4), width = 0.15) +
-  geom_point(position = position_dodge(width = 0.4), size = 3) +
-  geom_line(position = position_dodge(width = 0.4)) +
-  coord_cartesian(ylim = c(-0.2, 0.2), expand = 0) +
-  scale_color_manual(values = c("#3E8EDE", "#E69F00")) +
+                position = position_dodge(width = 0.45),
+                width = 0.15, linewidth = 1.1) +
+  
+  # Points
+  geom_point(position = position_dodge(width = 0.45), size = 4, show.legend = FALSE) +
+  
+  # Connecting lines
+  geom_line(position = position_dodge(width = 0.45), linewidth = 0.9, show.legend = FALSE) +
+  
+  # Numeric labels above points
+  geom_text(
+    aes(label = sprintf("%.3f", diff), color = lottery),
+    position = position_dodge(width = 0.45),
+    vjust = -7.5, size = 4.5, fontface = "bold", show.legend = FALSE
+  ) +
+  
+  # Color palette (consistent with other plots)
+  scale_color_manual(values = c(
+    "Risky lottery" = "#ff7f0e",  # orange
+    "Safe lottery"  = "#1f77b4"   # blue
+  )) +
+  
+  # Axis and coordinate control
+  coord_cartesian(ylim = c(-0.18, 0.18), expand = FALSE, clip = "off") +
+  scale_x_discrete(expand = expansion(mult = c(0.05, 0.05))) +
+  
+  # Labels
   labs(
     x = "Lottery pair",
-    y = "Propotion of choosing when it is focal - when it is nonfocal",
-    title = "Decoy Targeting Risky Lottery v.s. Decoy Targeting Risky Lottery ",
-    color = "Lottery type",
-    subtitle = "95% CI clustered by participant"
+    y = expression(Delta*" P(Chosen | Focal)"),
+    title = "Heterogeneous Effects by Lottery Pair",
+    subtitle = "95% CI clustered by participant",
+    color = "Lottery Type"
   ) +
-  theme_minimal(base_size = 13) +
+  
+  # Theme styling
+  theme_minimal(base_size = 18) +
   theme(
     legend.position = "top",
+    legend.title = element_text(size = 16, face = "bold"),
+    legend.text = element_text(size = 14),
     panel.grid.minor = element_blank(),
-    plot.title = element_text(face = "bold"),
-    axis.text.x = element_text(size = 11)
+    panel.grid.major.x = element_blank(),
+    axis.text.x = element_text(size = 13, face = "bold"),
+    axis.text.y = element_text(size = 12),
+    plot.title = element_text(face = "bold", size = 20, hjust = 0.5),
+    plot.subtitle = element_text(size = 13, hjust = 0.5, color = "gray40"),
+    axis.title.y = element_text(size = 15, margin = margin(r = 15)),
+    plot.margin = margin(10, 20, 25, 10)
   )
+
+p_hetero_pairs
 ```
 
 
 
 # Attraction Effect: Treatment vs. Control
-```{r, fig.width = 14, fig.height = 7}
+```{r, fig.width = 16, fig.height = 10}
 library(dplyr)
 library(ggplot2)
 library(clubSandwich)
@@ -369,23 +443,28 @@ pref_rev <- tibble(
     ci_high = diff + 1.96 * se
   )
 
-p_risk_averse<-ggplot(pref_rev, aes(x = lottery, y = diff)) +
+p_risk_averse <- ggplot(pref_rev1, aes(x = lottery, y = diff)) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
   geom_errorbar(aes(ymin = ci_low, ymax = ci_high),
-                width = 0.15, linewidth = 0.9, color = "gray30") +
+                width = 0.1, linewidth = 0.9, color = "gray30") +
   geom_point(size = 4, color = "black") +
   geom_line(aes(group = 1), color = "gray50", linewidth = 0.8) +
-  coord_cartesian(ylim = c(-0.15, 0.15), expand = 0) +
+  geom_text(aes(label = sprintf("%.3f", diff)), 
+            vjust = -3, size = 5.5) +
+  scale_x_discrete(expand = expansion(mult = c(0.001, 0.001))) + # tight edges
+  coord_cartesian(ylim = c(-0.15, 0.15), expand = FALSE) +
   labs(
     x = "",
-    y = "P(Chosen|Treatment Decoy) v.s. P(Chosen|Control Decoy)",
-    title = "Treatment Safe Decoy v.s. Control Decoy",
+    y = "P(Chosen | Treatment Decoy) vs. P(Chosen | Control Decoy)",
+    title = "Treatment Safe Decoy vs. Control Decoy",
     subtitle = "95% CI clustered by participant"
   ) +
   theme_minimal(base_size = 16) +
   theme(
     panel.grid.minor = element_blank(),
-    plot.title = element_text(face = "bold")
+    panel.grid.major.x = element_blank(),
+    plot.title = element_text(face = "bold"),
+    axis.text.x = element_text(size = 13, margin = margin(t = 5))
   )
 
 # Risk_Seeking Condition
@@ -456,23 +535,73 @@ pref_rev1 <- tibble(
 p_risk_seeking<-ggplot(pref_rev1, aes(x = lottery, y = diff)) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
   geom_errorbar(aes(ymin = ci_low, ymax = ci_high),
-                width = 0.15, linewidth = 0.9, color = "gray30") +
+                width = 0.1, linewidth = 0.9, color = "gray30") +
   geom_point(size = 4, color = "black") +
   geom_line(aes(group = 1), color = "gray50", linewidth = 0.8) +
-  coord_cartesian(ylim = c(-0.15, 0.15), expand = 0) +
+  geom_text(aes(label = sprintf("%.3f", diff)), 
+            vjust = -4, size = 5.5) +
+  scale_x_discrete(expand = expansion(mult = c(0.001, 0.001))) + # tight edges
+  coord_cartesian(ylim = c(-0.15, 0.15), expand = FALSE) +
   labs(
     x = "",
-    y = "",
-    title = "Treatment Risky Decoy v.s. Control Decoy",
+    y = "P(Chosen | Treatment Decoy) vs. P(Chosen | Control Decoy)",
+    title = "Treatment Risky Decoy vs. Control Decoy",
     subtitle = "95% CI clustered by participant"
   ) +
   theme_minimal(base_size = 16) +
   theme(
     panel.grid.minor = element_blank(),
-    plot.title = element_text(face = "bold")
+    panel.grid.major.x = element_blank(),
+    plot.title = element_text(face = "bold"),
+    axis.text.x = element_text(size = 13, margin = margin(t = 5))
   )
 
-p_risk_averse+p_risk_seeking
+
+# Custom plotting function for consistency
+plot_pref_rev <- function(pref_rev, title, color) {
+  ggplot(pref_rev, aes(x = lottery, y = diff)) +
+    geom_hline(yintercept = 0, linetype = "dotted", color = "gray60", linewidth = 0.8) +
+    geom_errorbar(aes(ymin = ci_low, ymax = ci_high),
+                  width = 0.15, linewidth = 1.1, color = color) +
+    geom_point(size = 5, color = color) +
+    geom_text(aes(label = sprintf("%.3f", diff)), 
+              vjust = -4, size = 6, fontface = "bold", color = color) +
+    scale_x_discrete(expand = expansion(mult = c(0.05, 0.05))) +
+    coord_cartesian(ylim = c(-0.15, 0.15), expand = FALSE) +
+    labs(
+      x = "",
+      y = expression(Delta*" P(Chosen | Treatment vs. Control)"),
+      title = title,
+      subtitle = "95% CI clustered by participant"
+    ) +
+    theme_minimal(base_size = 20) +
+    theme(
+  panel.grid.minor = element_blank(),
+  panel.grid.major.x = element_blank(),
+  axis.text.x = element_text(size = 16, face = "bold"),
+  axis.text.y = element_text(size = 14),
+  plot.title = element_text(face = "bold", size = 22, hjust = 0.5),
+  plot.subtitle = element_text(size = 14, hjust = 0.5, color = "gray40"),
+  axis.title.y = element_text(size = 16, margin = margin(r = 15)),
+  plot.margin = margin(10, 10, 20, 10),          # slightly more top margin
+  plot.title.position = "plot"
+) +
+coord_cartesian(ylim = c(-0.15, 0.15), expand = FALSE, clip = "off")   # <— key line!
+}
+
+# Make both plots
+p_risk_averse <- plot_pref_rev(pref_rev, "Treatment Safe Decoy vs. Control", "#1f77b4")
+p_risk_seeking <- plot_pref_rev(pref_rev1, "Treatment Risky Decoy vs. Control", "#ff7f0e")
+
+# Combine side by side
+p_risk_averse + p_risk_seeking +
+  plot_annotation(
+    title = "Effect of Decoy Treatments on Choice Probabilities",
+    theme = theme(
+      plot.title = element_text(size = 26, face = "bold", hjust = 0.5, margin = margin(b = 20))
+    )
+  )
+
 ```
 
 `
